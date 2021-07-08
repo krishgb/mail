@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./static/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="./static/resize.js" defer></script>
+    <script src="./static/dom.js" defer></script>
+    <script src="./static/script.js" defer></script>
+  </head>
+  <body>
+    <form>
+      <div id="mail_from">
+        <h3>From</h3>
+        <input
+          required
+          type="text"
+          placeholder="example@example.com"
+          id="from"
+        />
+        <select id="host">
+          <option value="@gmail.com">@gmail.com</option>
+          <option value="@amazon.com">@amazon.com</option>
+          <option value="@yahoo.com">@yahoo.com</option>
+          <option value="@outlook.com">@outlook.com</option>
+        </select>
+        <input type="text" placeholder="Username - optional" id="username" />
+        <input required type="password" placeholder="password" id="password" />
+      </div>
+      <br />
+      <hr />
+      <div id="mail_bcc">
+        <span class="left">
+          <h3>BCC</h3>
+          <input type="button" value="+" onclick="add('b')" />
+        </span>
+        <div>
+          <input type="email" placeholder="example@example.com" class="bcc" />
+          <input type="button" value="-" class="minus" onclick="remove()" />
+        </div>
+      </div>
+      <br />
+      <hr />
+
+      <div id="mail_cc">
+        <span class="left">
+          <h3>CC</h3>
+          <input type="button" value="+" onclick="add('c')" />
+        </span>
+        <div>
+          <input type="email" placeholder="example@example.com" class="cc" />
+          <input type="button" value="-" class="minus" onclick="remove()" />
+        </div>
+      </div>
+      <br />
+      <hr />
+
+      <div id="mail_to">
+        <span class="left">
+          <h3>To</h3>
+          <input type="button" value="+" onclick="add(1)" />
+        </span>
+        <div>
+          <input
+            id="first_to"
+            type="email"
+            placeholder="bakugo@mha.com"
+            class="to"
+          />
+          <input type="button" value="-" class="minus" onclick="remove()" />
+        </div>
+      </div>
+      <br />
+      <hr />
+
+      <div>
+        <h3>Subject</h3>
+        <input type="text" placeholder="Subject" id="subject" />
+      </div>
+      <br />
+      <hr />
+
+      <div id="mail_images">
+        <span class="left">
+          <h3>Images</h3>
+          <input type="button" value="+" onclick="add()" />
+        </span>
+
+        <div>
+          <input
+            type="file"
+            class="imgFile"
+            accept="image/*"
+            onchange="sus()"
+          />
+          <input type="button" value="-" class="minus" onclick="remove()" />
+        </div>
+      </div>
+      <br />
+      <hr />
+
+      <div class="mail_body">
+        <h3>Body</h3>
+        <div class="access">
+          <a
+            href="#"
+            onclick="format('bold'); return false"
+            class="button fa fa-bold"
+          ></a>
+          <a
+            href="#"
+            onclick="format('italic'); return false"
+            class="button fa fa-italic"
+          ></a>
+          <a
+            href="#"
+            onclick="format('underline'); return false"
+            class="button fa fa-underline"
+          ></a>
+          <a
+            href="#"
+            onclick="format('createlink'); return false"
+            class="button fa fa-link"
+          ></a>
+          <a
+            href="#"
+            onclick="format('unlink'); return false"
+            class="button fa fa-unlink"
+          ></a>
+          <a href="#" onclick="format('delete'); return false" class="button"
+            ><i class="fa-solid fa-trash-can"></i>Del</a
+          >
+          <a
+            href="#"
+            onclick="format('insertOrderedList'); return false"
+            class="button fa fa-list-ol"
+          ></a>
+          <a
+            href="#"
+            onclick="format('insertUnorderedList'); return false"
+            class="button fa fa-list-ul"
+          ></a>
+          <a
+            href="#"
+            onclick="format('justifyCenter'); return false"
+            class="button fa fa-align-center"
+          ></a>
+          <a
+            href="#"
+            onclick="format('justifyFull'); return false"
+            class="button fa fa-align-justify"
+          ></a>
+          <a
+            href="#"
+            onclick="format('justifyLeft'); return false"
+            class="button fa fa-align-left"
+          ></a>
+          <a
+            href="#"
+            onclick="format('justifyRight'); return false"
+            class="button fa fa-align-right"
+          ></a>
+          <a
+            href="#"
+            onclick="format('undo'); return false"
+            class="button fa fa-undo"
+          ></a>
+          <a
+            href="#"
+            onclick="format('redo'); return false"
+            class="button fa fa-redo"
+          ></a>
+          <a
+            href="#"
+            onclick="format('strikeThrough'); return false"
+            class="button fa fa-strikethrough"
+          ></a>
+          <a href="#" onclick="format('foreColor'); return false" class="button"
+            >Fontcolor
+          </a>
+          <input type="color" id="fcolor" />
+          <a
+            href="#"
+            onclick="format('hiliteColor'); return false"
+            class="button"
+            >Highlight
+          </a>
+          <input type="color" id="hcolor" />
+          <span>
+            <a
+              href="#"
+              onclick="format('-'); return false"
+              class="button fa fa-font fa-xs"
+              >-</a
+            >
+            <input type="number" id="range" value="3" hidden />
+
+            <a
+              href="#"
+              onclick="format('+'); return false"
+              class="button fa fa-font fa-1x"
+              >+</a
+            >
+          </span>
+        </div>
+
+        <div class="body" contenteditable id="body">Mail Body</div>
+      </div>
+      <br /><br />
+      <br />
+      <hr />
+      <div id="mail_attachments">
+        <span class="left">
+          <h3>Attachments</h3>
+          <input type="button" value="+" onclick="add(2)" />
+        </span>
+        <div>
+          <input
+            type="text"
+            placeholder="File path"
+            class="attach"
+            onchange="fileName()"
+          />
+          <input type="button" value="-" class="minus" onclick="remove()" />
+        </div>
+      </div>
+      <hr />
+      <button>Submit</button>
+    </form>
+  </body>
+</html>

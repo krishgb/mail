@@ -141,13 +141,10 @@ func main() {
 	port := 5000
 	if len(os.Args) == 2{
 		num, err := strconv.Atoi(os.Args[1])
-		if err!=nil{
-			port = 5000
-		} else {
+		if err==nil{
 			port = num
-		} 
+		}	
 	}
-	fmt.Println(port)
 	localhost := fmt.Sprint("localhost:", port)
 
 	http.HandleFunc("/", home)
@@ -155,7 +152,7 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	fmt.Println("\nserver is running\n ")
+	fmt.Println("\nServer is running on port", port)
 	openbrowser("http://" + localhost)
 	if err := http.ListenAndServe(localhost, nil); err != nil {
 		panic(err)

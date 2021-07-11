@@ -109,7 +109,18 @@
       <hr />
 
       <div class="mail_body">
-        <h3>Body</h3>
+        <h3>
+          Body &nbsp;
+
+          <select id="templates" onchange="changeTemplate()"></select>
+
+          <input
+            type="button"
+            id="save_templ"
+            value="Save as a template"
+            onclick="saveTempl()"
+          />
+        </h3>
         <div class="access">
           <a
             href="#"

@@ -1,6 +1,34 @@
 const d = document
-const s = d.getElementById('size')
-const add = (which) => {
+
+const getTemplates = async () => {
+    const select = d.getElementById('templates')
+    select.innerHTML = ''
+
+    const data = await (await fetch('/get')).json()
+
+    if (!data.templates) {
+        select.hidden = true
+        return
+    } else {
+        select.hidden = false
+        const templates = JSON.parse(data.templates)
+
+
+        templates.map(template => {
+            const [[key, value]] = Object.entries(template)
+            const option = d.createElement('option')
+            option.selected = true
+            option.value = value
+            option.innerText = key
+            select.appendChild(option)
+        })
+    }
+}
+
+d.addEventListener('DOMContentLoaded', e => {
+    getTemplates()
+})
+const add = which => {
     const e = event
 
     const input = d.createElement('input')
@@ -59,6 +87,7 @@ const sus = () => {
         .then(res => {
             b.innerHTML += `
                 <img
+                    width="100"
                     src=${res.original} 
                     alt="${e.target.files[0].name.split('.')[0].split(' ').join('_')}" />
             `
@@ -70,7 +99,7 @@ const sus = () => {
     }
 }
 
-function format(cmd) {
+const format = cmd => {
     const r = document.getElementById('range')
     switch (cmd) {
         case 'createlink':
@@ -94,4 +123,36 @@ function format(cmd) {
             document.execCommand(cmd, false, null)
             break;
     }
+}
+
+const saveTempl = () => {
+
+    const templateName = prompt('Give a name for this template')
+    const options = d.querySelectorAll('#templates option')
+    for (let i of options) {
+        if (i.textContent === templateName) {
+            alert('There is already a template with the same name.')
+            return
+        }
+    }
+    if (!templateName) return
+
+    const template = d.getElementById('body').innerHTML
+    const e = event
+
+    fetch('/save', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            [templateName]: template
+        })
+    }).then(res => {
+        getTemplates()
+    })
+}
+
+const changeTemplate = () => {
+    d.getElementById('body').innerHTML = event.target.value
 }

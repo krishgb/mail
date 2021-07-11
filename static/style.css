@@ -71,8 +71,6 @@ input:focus:not(input[type="button"]) {
 input[value="+"] {
   cursor: pointer;
   padding: 5px 7px;
-  /* background: brown; */
-  /* color: lightgray; */
   border: 1px solid black;
   border-radius: 3px;
 }
@@ -94,9 +92,13 @@ h3 {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: white;
   color: black;
+  border-radius: 5px;
+  margin-top: 25px;
 }
 
-button {
+button,
+input[type="button"],
+input[type="file"] {
   cursor: pointer;
   text-align: center;
   padding: 8px;
@@ -109,5 +111,14 @@ button {
 
 button:hover {
   background: salmon;
-  /* color: black; */
+}
+
+#save_templ {
+  background: tomato;
+  color: white;
+}
+
+#subject {
+  width: 50%;
+  height: 30px;
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html"
 	"html/template"
+	"io"
 	"net/http"
 	"net/smtp"
 	"os"
@@ -43,6 +44,56 @@ type Reuirements struct {
 	FilePath []string      `json:"filepath"`
 }
 
+func saveTemplate(filename string, data string) error {
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err = file.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	_, err = file.WriteString(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func read(filename string) ([]byte, error) {
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	str, err := os.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	return []byte(str), nil
+}
+
+func getTemplates(w http.ResponseWriter, r *http.Request) {
+	templates, err := read("templates.json")
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	a := new(struct {
+		Templates string `json:"templates"`
+	})
+
+	a.Templates = string(templates)
+	json.NewEncoder(w).Encode(a)
+
+}
+
 func home(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("index.html")
@@ -60,7 +111,12 @@ func home(w http.ResponseWriter, r *http.Request) {
 func m(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting Data....")
 	e, b := new(Reuirements), new(bytes.Buffer)
-	json.NewDecoder(r.Body).Decode(&e)
+	err := json.NewDecoder(r.Body).Decode(&e)
+	if err != nil {
+		panic(err)
+	}
+
+	defer r.Body.Close()
 
 	t, err := template.ParseFiles("temp.html")
 	if err != nil {
@@ -116,6 +172,56 @@ func sendMail(e Reuirements, b bytes.Buffer) string {
 	return "Email Sent"
 }
 
+func save(w http.ResponseWriter, r *http.Request) {
+
+	byt, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	type temp map[string]string
+
+	templ := temp{}
+	templates := []temp{}
+
+	err = json.Unmarshal(byt, &templ)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := read("templates.json")
+	if err != nil {
+		panic(err)
+	}
+
+	json.Unmarshal(data, &templates)
+
+	templates = append(templates, templ)
+
+	data, err = json.Marshal(templates)
+	if err != nil {
+		panic(err)
+	}
+
+	err = saveTemplate("templates.json", string(data))
+	if err != nil {
+		panic(err)
+	}
+
+	response := struct {
+		T bool `json:"added"`
+	}{T: true}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(response)
+}
 
 // Original Author - https://gist.github.com/hyg/9c4afcd91fe24316cbf0
 func openbrowser(url string) {
@@ -139,16 +245,18 @@ func openbrowser(url string) {
 
 func main() {
 	port := 5000
-	if len(os.Args) == 2{
+	if len(os.Args) == 2 {
 		num, err := strconv.Atoi(os.Args[1])
-		if err==nil{
+		if err == nil {
 			port = num
-		}	
+		}
 	}
 	localhost := fmt.Sprint("localhost:", port)
 
 	http.HandleFunc("/", home)
 	http.HandleFunc("/mail", m)
+	http.HandleFunc("/save", save)
+	http.HandleFunc("/get", getTemplates)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 

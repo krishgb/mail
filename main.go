@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"html"
 	"html/template"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/smtp"
 	"os"
@@ -30,6 +30,7 @@ type Attachments struct {
 	ContentDisposition string `json:"contentDisposition"`
 	Cid                string `json:"cid"`
 }
+
 
 type Reuirements struct {
 	Host     string        `json:"host"`
@@ -56,6 +57,7 @@ func saveTemplate(filename string, data string) error {
 		}
 	}()
 
+	
 	_, err = file.WriteString(data)
 	if err != nil {
 		return err
@@ -71,7 +73,7 @@ func read(filename string) ([]byte, error) {
 	}
 	defer file.Close()
 
-	str, err := os.ReadFile(filename)
+	str, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}
@@ -174,7 +176,7 @@ func sendMail(e Reuirements, b bytes.Buffer) string {
 
 func save(w http.ResponseWriter, r *http.Request) {
 
-	byt, err := io.ReadAll(r.Body)
+	byt, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
